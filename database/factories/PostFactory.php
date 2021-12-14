@@ -7,6 +7,8 @@ use Faker\Generator as Faker;
 
 $factory->define(Post::class, function (Faker $faker) {
     return [
-        //
+        'title' => $this->faker->name(),
+        'content' => $this->faker->text(),
+        'user_id' => 1,
     ];
 });
