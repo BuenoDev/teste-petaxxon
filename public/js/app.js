@@ -1981,8 +1981,11 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    axios.get('/api/post').then(function (response) {
+    axios.get('sanctum/csrf-cookie').then(function (response) {
       console.log(response);
+    });
+    axios.get('/api/post').then(function (response) {
+      // console.log(response)
       _this.posts = response.data;
     });
   },
@@ -6374,7 +6377,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.card[data-v-5e8280ea]{\n    margin-bottom: 30px;\n}\n", ""]);
+exports.push([module.i, "\n.card[data-v-5e8280ea]{\r\n    margin-bottom: 30px;\n}\r\n", ""]);
 
 // exports
 

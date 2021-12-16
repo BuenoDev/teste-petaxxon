@@ -14,8 +14,11 @@
 export default {
     // name: 'PostList',
     mounted(){
-        axios.get('/api/post').then(response => {
+        axios.get('sanctum/csrf-cookie').then(response => {
             console.log(response)
+        })
+        axios.get('/api/post').then(response => {
+            // console.log(response)
             this.posts = response.data
         });
     },
