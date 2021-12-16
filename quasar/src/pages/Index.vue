@@ -12,6 +12,9 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'PageIndex'
+  name: 'PageIndex',
+  mounted () {
+    this.$api.get('/api/post').then(response => console.log(response))
+  }
 })
 </script>
