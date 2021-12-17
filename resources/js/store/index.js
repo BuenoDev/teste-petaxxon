@@ -10,8 +10,14 @@ export default function () {
             user: null,
         },
         actions: {
+            login (context,credentials) {
+                console.log(credentials)
+            },
             logout (context) {
                 console.log('action logout')
+            },
+            register (context, credentials) {
+                console.log(credentials)
             }
         },
         mutators: {
