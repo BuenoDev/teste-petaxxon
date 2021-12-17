@@ -49,7 +49,7 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <button class="btn btn-primary" @click="login(credentials)">
+                                <button class="btn btn-primary" @click="submitLogin()">
                                     Login
                                 </button>
 
@@ -80,7 +80,21 @@ export default {
     methods: {
         ...mapActions([
             'login'
-        ])
+        ]),
+        submitLogin() {
+            /**
+             * TODO: router push está sendo chamado
+             * ANTES das chamadas serem finalizadas
+             *
+             * Talvez pelo fato da propria action ser uma Promise?
+             *
+             * Não é o ideal, mas importar routes/index.js dentro
+             * do store e utilizar o push por la resolveria esse problema
+             */
+            this.login(this.credentials).then(response => {
+                this.$router.push('/')
+            })
+        }
     },
     computed: {
         credentials () {

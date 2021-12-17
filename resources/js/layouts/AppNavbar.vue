@@ -25,18 +25,18 @@
                                 <router-link class="nav-link" to="/cadastro">Cadastrar</router-link>
                             </li>
                         </template>
-                        <div v-else>
+                        <template v-if="isAuth">
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                     {{ getUsername }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" @click="logout">
+                                    <a class="dropdown-item" @click="submitLogout">
                                         logout
                                     </a>
                                 </div>
                             </li>
-                        </div>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -53,7 +53,14 @@ export default {
     methods: {
         ...mapActions([
             'logout'
-        ])
+        ]),
+        submitLogout() {
+            this.logout().then(() => {
+                if(this.$route.path !== '/') { // if remove aviso de redundancia
+                    this.$router.push('/')
+                }
+            })
+        }
     }
 }
 </script>

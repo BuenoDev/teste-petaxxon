@@ -2087,7 +2087,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])(['isAuth', 'getUsername'])),
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['logout']))
+  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['logout'])), {}, {
+    submitLogout: function submitLogout() {
+      var _this = this;
+
+      this.logout().then(function () {
+        if (_this.$route.path !== '/') {
+          // if remove aviso de redundancia
+          _this.$router.push('/');
+        }
+      });
+    }
+  })
 });
 
 /***/ }),
@@ -2186,7 +2197,24 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       password: ''
     };
   },
-  methods: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['login'])),
+  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['login'])), {}, {
+    submitLogin: function submitLogin() {
+      var _this = this;
+
+      /**
+       * TODO: router push está sendo chamado
+       * ANTES das chamadas serem finalizadas
+       *
+       * Talvez pelo fato da propria action ser uma Promise?
+       *
+       * Não é o ideal, mas importar routes/index.js dentro
+       * do store e utilizar o push por la resolveria esse problema
+       */
+      this.login(this.credentials).then(function (response) {
+        _this.$router.push('/');
+      });
+    }
+  }),
   computed: {
     credentials: function credentials() {
       return {
@@ -38924,7 +38952,10 @@ var render = function () {
                           1
                         ),
                       ]
-                    : _c("div", [
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.isAuth
+                    ? [
                         _c("li", { staticClass: "nav-item dropdown" }, [
                           _c(
                             "a",
@@ -38959,7 +38990,7 @@ var render = function () {
                                 "a",
                                 {
                                   staticClass: "dropdown-item",
-                                  on: { click: _vm.logout },
+                                  on: { click: _vm.submitLogout },
                                 },
                                 [
                                   _vm._v(
@@ -38970,7 +39001,8 @@ var render = function () {
                             ]
                           ),
                         ]),
-                      ]),
+                      ]
+                    : _vm._e(),
                 ],
                 2
               ),
@@ -39124,7 +39156,7 @@ var render = function () {
                     staticClass: "btn btn-primary",
                     on: {
                       click: function ($event) {
-                        return _vm.login(_vm.credentials)
+                        return _vm.submitLogin()
                       },
                     },
                   },
@@ -56175,6 +56207,7 @@ try {
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.withCredentials = true;
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
@@ -56904,14 +56937,24 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   var Store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     state: {
-      user: null
+      user: null,
+      userToken: null
     },
     actions: {
       login: function login(context, credentials) {
-        console.log(credentials);
+        axios.get('/sanctum/csrf-cookie').then(function (response) {
+          axios.post('/api/login', credentials).then(function (response) {
+            var token = response.data.token;
+            context.commit('setUserToken', token);
+            axios.defaults.headers.common["Authorization"] = 'Bearer ' + token;
+            axios.get('/api/user').then(function (response) {
+              context.commit('setUserData', response.data);
+            });
+          });
+        });
       },
       logout: function logout(context) {
-        console.log('action logout');
+        context.commit('eraseUserData');
       },
       register: function register(context, credentials) {
         console.log(credentials);
@@ -56920,14 +56963,33 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
         });
       }
     },
-    mutators: {},
-    getters: {
-      getUsername: function getUsername() {
-        // return this.state.user.name
-        return 'gustavo';
+    mutations: {
+      setUserToken: function setUserToken(state, data) {
+        state.userToken = data;
       },
-      isAuth: function isAuth() {
-        return false;
+      setUserData: function setUserData(state, data) {
+        state.user = {
+          name: data.name,
+          email: data.email
+        };
+      },
+      eraseUserData: function eraseUserData(state) {
+        state.userToken = null;
+        state.user = null;
+        axios.defaults.headers.common["Authorization"] = null;
+      }
+    },
+    getters: {
+      getUsername: function getUsername(state) {
+        console.log(state.user.name);
+        console.log(state.isAuth);
+        return state.user.name;
+      },
+      getUserToken: function getUserToken(state) {
+        return 'Bearer ' + state.userToken;
+      },
+      isAuth: function isAuth(state) {
+        return state.userToken ? true : false;
       }
     }
   });
