@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Comment;
+use App\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -12,9 +14,9 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Post $post)
     {
-        //
+        return response()->json($post->comments);
     }
 
     /**
@@ -33,9 +35,13 @@ class CommentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Post $post)
     {
-        //
+        Comment::create([
+            'post_id' => $post->id,
+            'user_id' => Auth::user()->id,
+            'content' => $request->comment,
+        ]);
     }
 
     /**
@@ -80,6 +86,10 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        if(Auth::user()->id == $comment->user_id){
+            $comment->delete();
+        } else {
+            abort(403,'Acesso negado');
+        }
     }
 }
