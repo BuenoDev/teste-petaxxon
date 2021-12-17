@@ -5,12 +5,28 @@
             <div class="card-body">
                 {{ post.content }}
             </div>
+            <div class="card-footer">
+                <a @click="selectPost()">
+                    veja mais
+                </a>
+            </div>
         </div>
     </div>
 </template>
 <script>
+import { mapActions } from 'vuex'
 export default {
-    props:['post']
+    props:['post'],
+    methods: {
+        ...mapActions([
+            'setSelectedPost'
+        ]),
+        selectPost() {
+            this.setSelectedPost(this.post).then(() => {
+                this.$router.push('/post')
+            })
+        }
+    }
 }
 </script>
 <style scoped>

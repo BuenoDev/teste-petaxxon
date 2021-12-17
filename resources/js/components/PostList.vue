@@ -10,22 +10,22 @@
     </div>
 </template>
 <script>
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
     // name: 'PostList',
     mounted(){
-        axios.get('sanctum/csrf-cookie').then(response => {
-            console.log(response)
-        })
-        axios.get('/api/post').then(response => {
-            // console.log(response)
-            this.posts = response.data
-        });
+        this.fetchPosts()
     },
-    data() {
-        return {
-            posts: []
-        }
+    methods:{
+        ...mapActions([
+            'fetchPosts'
+        ])
+    },
+    computed:{
+        ...mapGetters([
+            'posts'
+        ])
     }
 }
 </script>

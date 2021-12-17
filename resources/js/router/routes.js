@@ -9,6 +9,12 @@ export default [
             meta: { allowGuest: true },
             component: () => import('../pages/home')
           },
+          {
+            path: '/post',
+            name: 'post',
+            meta: { allowGuest: true },
+            component: () => import('../pages/postDetail')
+          },
         ]
       },
       {

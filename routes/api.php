@@ -22,6 +22,9 @@ Route::get('/post','PostController@index');
 
 Route::post('/login','Auth\LoginController@authenticate');
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    Route::post('/post/{post}/comment','CommentController@store');
 });
