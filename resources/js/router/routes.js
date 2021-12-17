@@ -15,6 +15,12 @@ export default [
             meta: { allowGuest: true },
             component: () => import('../pages/postDetail')
           },
+          {
+            path: '/post/create',
+            name: 'post',
+            meta: { allowGuest: false },
+            component: () => import('../pages/CreatePost')
+          },
         ]
       },
       {

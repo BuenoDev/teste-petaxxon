@@ -27,6 +27,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::post('/post','PostController@store');
     Route::post('/post/{post}/comment','CommentController@store');
     Route::delete('/comment/{comment}', 'CommentController@destroy');
 });

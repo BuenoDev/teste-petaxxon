@@ -39,6 +39,11 @@ export default function () {
                          console.log(response)
                      })
             },
+            createPost (context, payload){
+                return axios.post('/api/post',payload).then(response => {
+                    alert('Postagem criada com sucesso')
+                })
+            },
             fetchPosts (context) {
                 axios.get('/api/post').then(response => {
                     console.log('posts:')
