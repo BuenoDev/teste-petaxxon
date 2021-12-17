@@ -18,6 +18,10 @@ export default function () {
             },
             register (context, credentials) {
                 console.log(credentials)
+                return axios.post('/api/register',credentials)
+                     .then(response => {
+                         console.log(response)
+                     })
             }
         },
         mutators: {

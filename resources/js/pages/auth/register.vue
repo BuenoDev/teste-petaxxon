@@ -10,7 +10,7 @@
                             <label for="name" class="col-md-4 col-form-label text-md-right">Nome</label>
 
                             <div class="col-md-6">
-                                <input id="name" type="text" class="form-control" name="name"  required autocomplete="name" autofocus>
+                                <input id="name" v-model="name" type="text" class="form-control" name="name"  required autocomplete="name" autofocus>
 
                                 <!-- @error('name')
                                     <span class="invalid-feedback" role="alert">
@@ -26,11 +26,9 @@
                             <div class="col-md-6">
                                 <input id="email" v-model="email" type="email" class="form-control" :class="invalidEmail ? ' is-invalid' : ''" name="email"  required autocomplete="email" autofocus>
 
-                                <!-- @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                    <span v-if="invalidEmail" class="invalid-feedback" role="alert">
+                                        <strong>{{ invalidEmailMsg }}</strong>
                                     </span>
-                                @enderror -->
                             </div>
                         </div>
 
@@ -40,11 +38,9 @@
                             <div class="col-md-6">
                                 <input id="password" v-model="password" type="password" class="form-control" :class="invalidPassword ? ' is-invalid' : ''" name="password" required autocomplete="current-password">
 
-                                <!-- @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                    <span v-if="invalidPassword"  class="invalid-feedback" role="alert">
+                                        <strong>{{ invalidPasswordMsg }}</strong>
                                     </span>
-                                @enderror -->
                             </div>
                         </div>
 
@@ -75,7 +71,9 @@ export default {
     data () {
         return {
             invalidEmail: false,
+            invalidEmailMsg: '',
             invalidPassword: false,
+            invalidPasswordMsg: '',
             name: '',
             email: '',
             password: '',
@@ -84,12 +82,32 @@ export default {
     },
     methods: {
         ...mapActions([
-            'register'
+            'register','login'
         ]),
         validateAndRegister() {
+
             if(this.password === this.confirmPassword) {
                 this.invalidPassword = false
                 this.register(this.credentials)
+                    .then(response => {
+                        //TODO: coloca um alert descente
+                        alert('usuario criado com sucesso')
+                        this.$router.push('/login')
+                    })
+                    .catch(error => {
+                    console.log(error.response.data)
+                    let errorResponse = error.response.data.errors
+
+                    if(errorResponse.email){
+                        this.invalidEmail = true
+                        this.invalidEmailMsg = errorResponse.email[0]
+                    }
+                    if(errorResponse.password){
+                        this.invalidPassword = true
+                        this.invalidPasswordMsg = errorResponse.password[0]
+                    }
+
+                })
             }
             else this.invalidPassword = true
         }
@@ -99,7 +117,8 @@ export default {
             return {
                 name: this.name,
                 email: this.email,
-                password: this.password
+                password: this.password,
+                password_confirmation: this.confirmPassword
             }
         }
     }

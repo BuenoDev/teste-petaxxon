@@ -2282,27 +2282,45 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       invalidEmail: false,
+      invalidEmailMsg: '',
       invalidPassword: false,
+      invalidPasswordMsg: '',
       name: '',
       email: '',
       password: '',
       confirmPassword: ''
     };
   },
-  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['register'])), {}, {
+  methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapActions"])(['register', 'login'])), {}, {
     validateAndRegister: function validateAndRegister() {
+      var _this = this;
+
       if (this.password === this.confirmPassword) {
         this.invalidPassword = false;
-        this.register(this.credentials);
+        this.register(this.credentials).then(function (response) {
+          //TODO: coloca um alert descente
+          alert('usuario criado com sucesso');
+
+          _this.$router.push('/login');
+        })["catch"](function (error) {
+          console.log(error.response.data);
+          var errorResponse = error.response.data.errors;
+
+          if (errorResponse.email) {
+            _this.invalidEmail = true;
+            _this.invalidEmailMsg = errorResponse.email[0];
+          }
+
+          if (errorResponse.password) {
+            _this.invalidPassword = true;
+            _this.invalidPasswordMsg = errorResponse.password[0];
+          }
+        });
       } else this.invalidPassword = true;
     }
   }),
@@ -2311,7 +2329,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return {
         name: this.name,
         email: this.email,
-        password: this.password
+        password: this.password,
+        password_confirmation: this.confirmPassword
       };
     }
   }
@@ -39152,7 +39171,47 @@ var render = function () {
           _c("div", { staticClass: "card-header" }, [_vm._v("Cadastrar")]),
           _vm._v(" "),
           _c("div", { staticClass: "card-body" }, [
-            _vm._m(0),
+            _c("div", { staticClass: "form-group row" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "col-md-4 col-form-label text-md-right",
+                  attrs: { for: "name" },
+                },
+                [_vm._v("Nome")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-md-6" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.name,
+                      expression: "name",
+                    },
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    id: "name",
+                    type: "text",
+                    name: "name",
+                    required: "",
+                    autocomplete: "name",
+                    autofocus: "",
+                  },
+                  domProps: { value: _vm.name },
+                  on: {
+                    input: function ($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.name = $event.target.value
+                    },
+                  },
+                }),
+              ]),
+            ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group row" }, [
               _c(
@@ -39194,6 +39253,17 @@ var render = function () {
                     },
                   },
                 }),
+                _vm._v(" "),
+                _vm.invalidEmail
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "invalid-feedback",
+                        attrs: { role: "alert" },
+                      },
+                      [_c("strong", [_vm._v(_vm._s(_vm.invalidEmailMsg))])]
+                    )
+                  : _vm._e(),
               ]),
             ]),
             _vm._v(" "),
@@ -39236,6 +39306,17 @@ var render = function () {
                     },
                   },
                 }),
+                _vm._v(" "),
+                _vm.invalidPassword
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "invalid-feedback",
+                        attrs: { role: "alert" },
+                      },
+                      [_c("strong", [_vm._v(_vm._s(_vm.invalidPasswordMsg))])]
+                    )
+                  : _vm._e(),
               ]),
             ]),
             _vm._v(" "),
@@ -39302,37 +39383,7 @@ var render = function () {
     ]),
   ])
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row" }, [
-      _c(
-        "label",
-        {
-          staticClass: "col-md-4 col-form-label text-md-right",
-          attrs: { for: "name" },
-        },
-        [_vm._v("Nome")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-md-6" }, [
-        _c("input", {
-          staticClass: "form-control",
-          attrs: {
-            id: "name",
-            type: "text",
-            name: "name",
-            required: "",
-            autocomplete: "name",
-            autofocus: "",
-          },
-        }),
-      ]),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -56864,6 +56915,9 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
       },
       register: function register(context, credentials) {
         console.log(credentials);
+        return axios.post('/api/register', credentials).then(function (response) {
+          console.log(response);
+        });
       }
     },
     mutators: {},
