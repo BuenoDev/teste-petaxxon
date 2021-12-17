@@ -10,13 +10,21 @@ export default function () {
             user: null,
         },
         actions: {
-            
+            logout (context) {
+                console.log('action logout')
+            }
         },
         mutators: {
 
         },
         getters: {
-
+            getUsername () {
+                // return this.state.user.name
+                return 'gustavo'
+            },
+            isAuth () {
+                return false
+            }
         }
     })
 
