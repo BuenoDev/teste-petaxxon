@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::post('/register','Auth\RegisterController@register');
 Route::get('/post','PostController@index');
+Route::get('/post/{post}/comments','CommentController@index');
 
 Route::post('/login','Auth\LoginController@authenticate');
 
@@ -27,4 +28,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $request->user();
     });
     Route::post('/post/{post}/comment','CommentController@store');
+    Route::delete('/comment/{comment}', 'CommentController@destroy');
 });

@@ -14,15 +14,15 @@ export default function () {
         },
         actions: {
             login (context,credentials) {
-                axios.get('/sanctum/csrf-cookie')
-                     .then(response => {
-                    axios.post('/api/login', credentials)
-                         .then(response => {
+                return axios.get('/sanctum/csrf-cookie')
+                     .then(function(response){
+                    return axios.post('/api/login', credentials)
+                         .then(function(response){
                                 let token = response.data.token
                                 context.commit('setUserToken', token)
                                 axios.defaults.headers.common["Authorization"] = 'Bearer ' + token
-                                axios.get('/api/user')
-                                     .then(response => {
+                                return axios.get('/api/user')
+                                     .then(function(response){
                                          context.commit('setUserData',response.data)
                                      })
                             })
@@ -59,7 +59,17 @@ export default function () {
                 })
             },
             resetSelectedPostComments(context){
-                console.log(selectedPost)
+                let selected = context.getters.selectedPost
+                axios.get('/api/post/'+selected.id+'/comments').then(response => {
+                    // chama a mutation para modificar o array de comentarios do post selecionado
+                    context.commit('updateSelectedPostComments',response.data)
+                })
+            },
+            // TODO: verificar o funcionamento da funcao para varios usuarios
+            deleteComment(context, id) {
+                axios.delete('/api/comment/' + id).then(response => {
+                    context.dispatch('resetSelectedPostComments')
+                })
             }
         },
         mutations: {
@@ -83,6 +93,9 @@ export default function () {
             },
             setSelectedPost(state, data) {
                 state.selectedPost = data
+            },
+            updateSelectedPostComments (state, data){
+                state.selectedPost.comments = data
             }
         },
         getters: {

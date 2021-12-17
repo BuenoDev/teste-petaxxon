@@ -25,10 +25,16 @@
                         <span>
                             {{ comment.content }}
                         </span>
-                        <button class="form-group btn-danger btn-sm" v-if="comment.user_id === getUserId">
-                            delete
-                            <!-- pode ser trocado por icone -->
-                        </button>
+                        <div class="btn-group" v-if="comment.user_id === getUserId">
+                            <button class="form-group btn-primary btn-sm">
+                                <!-- <font-awesome-icon :icon="['fas' ,'fa-edit']" alt="Editar"/> -->
+                                Editar
+                            </button>
+                            <button class="form-group btn-danger btn-sm"  @click="deleteComment(comment.id)">
+                                Deletar
+                                <!-- <font-awesome-icon icon="trash" alt="Deletar" /> -->
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -50,16 +56,17 @@ export default {
         ])
     },
     methods: {
+        //TODO: A nomeacao dos metodos/actions ficaria muito melhor se feito de forma modular
         ...mapActions([
-            'saveComment'
+            'saveComment','deleteComment'
         ]),
         sendComment() {
             if(this.isAuth) {
                 this.saveComment(this.comment).then(() => {
-                    //
+                    this.comment = ''
                 })
             }
-        }
+        },
     }
 
 }

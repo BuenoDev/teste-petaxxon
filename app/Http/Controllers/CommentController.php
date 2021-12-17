@@ -14,9 +14,9 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Post $post)
     {
-        //
+        return response()->json($post->comments);
     }
 
     /**
@@ -86,6 +86,10 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        if(Auth::user()->id == $comment->user_id){
+            $comment->delete();
+        } else {
+            abort(403,'Acesso negado');
+        }
     }
 }
